@@ -15,6 +15,12 @@ void setup(){
 	EEPROM.begin();
 
 	eeprom_len = EEPROM.length();
+
+	uint8_t c = 0;
+	while(true){
+		Serial.write(c++);
+		delay(1000);
+	}
 }
 
 void loop(){
