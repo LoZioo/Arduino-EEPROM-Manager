@@ -16,9 +16,12 @@ void setup(){
 
 	eeprom_len = EEPROM.length();
 
-	uint8_t c = 0;
+	packet.command = EEPROM_DUMP;
+	packet.mem_address = 10;
+	packet.data_len = 25;
+
 	while(true){
-		Serial.write(c++);
+		Serial.write((uint8_t*) &packet, sizeof(packet));
 		delay(1000);
 	}
 }
