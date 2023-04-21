@@ -64,7 +64,7 @@ void loop(){
 				send_ack();
 				break;
 
-			case EEPROM_LEN:
+			case EEPROM_SIZE:
 				Serial.write((uint8_t*) &eeprom_len, sizeof(eeprom_len));
 				break;
 		}

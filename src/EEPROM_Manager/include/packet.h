@@ -9,7 +9,7 @@ typedef enum : uint8_t {
 	EEPROM_DUMP,
 	EEPROM_CLEAR,
 
-	EEPROM_LEN,
+	EEPROM_SIZE,
 } packet_command_t;
 
 struct __attribute((__packed__)) packet_t {
