@@ -5,8 +5,8 @@
 
 uint16_t eeprom_size;
 
-void send_byte(command_t com){
-	Serial.write(com);
+void send_byte(command_t val){
+	Serial.write(val);
 }
 
 void setup(){
