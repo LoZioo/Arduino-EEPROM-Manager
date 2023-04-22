@@ -1,5 +1,7 @@
 #include <Arduino.h>
 
+const uint32_t SYNC_DATA = 0xAABBCCDD;
+
 typedef enum : uint8_t {
 	DEVICE_PING,
 	DEVICE_ACK,

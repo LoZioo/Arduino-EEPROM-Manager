@@ -14,7 +14,11 @@ void setup(){
 	Serial.begin(SERIAL_SPEED);
 	EEPROM.begin();
 
+	// Get EEPROM size.
 	eeprom_size = EEPROM.length();
+
+	// Send sync data.
+	Serial.write((uint8_t*) &SYNC_DATA, sizeof(SYNC_DATA));
 }
 
 void loop(){
