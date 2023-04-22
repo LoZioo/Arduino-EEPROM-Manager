@@ -14,13 +14,29 @@ if __name__ == "__main__":
 	# Minimum args number.
 	if argc >= 3:
 		SERIAL_PORT = argv[2]
-		ser = serial.Serial(SERIAL_PORT, SERIAL_SPEED)
+
+		try:
+			ser = serial.Serial(SERIAL_PORT, SERIAL_SPEED)
+
+		except:
+			print("Error in opening the serial port \"%s\"." % SERIAL_PORT)
+			exit(1)
 
 		# Receve sync data.
-		if int.from_bytes(ser.read(4), "little", signed=False) == SYNC_DATA:
+		if int.from_bytes(ser.read(SYNC_DATA_SIZE), "little", signed=False) == SYNC_DATA:
 			match argc:
 				case 3:
 					match argv[1]:
+						case "test":
+							ser.write(struct.pack(PACKET_T, DEVICE_PING, 0, 0))
+							ack = struct.unpack(PACKET_T, ser.read(PACKET_SIZE))
+							
+							if ack == (DEVICE_ACK, 0, 0):
+								print("ACK received.")
+							
+							else:
+								print("Error: wrong ACK packet.")
+
 						case "size":
 							ser.write(struct.pack(PACKET_T, EEPROM_SIZE, 0, 0))
 							val = int.from_bytes(ser.read(2), "little", signed=False)
