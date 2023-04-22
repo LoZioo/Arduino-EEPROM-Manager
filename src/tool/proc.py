@@ -23,6 +23,24 @@ def check_ack(packet: bytes, message: str = "ACK received.") -> bool:
 	if ack == (DEVICE_ACK, 0, 0):
 		print(message)
 		return True
-	
+
 	print("Error: wrong ACK packet.")
 	return False
+
+def print_hex_dump(dump: bytes) -> None:
+	print("Hex dump:\n")
+	print("   Address", end="")
+	for i in range(0, 16):
+		print("  %02X" % i, end="")
+	print("\n")
+
+	for i in range(0, int(len(dump) / 16)):
+		print("  %08X" % (16 * i), end="")
+
+		for j in range(0, 16):
+			print("  %02X" % dump[16 * i + j], end="")
+		print()
+
+def save_dump(filename: str, dump: bytes) -> None:
+	with open(filename, "wb") as file:
+		file.write(dump)
