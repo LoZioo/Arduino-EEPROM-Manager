@@ -73,6 +73,7 @@ if __name__ == "__main__":
 
 		ser.close()
 
+	# argc < 3
 	else:
 		print_help()
 
