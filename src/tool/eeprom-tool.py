@@ -1,7 +1,6 @@
-import serial, struct, sys
+import serial, sys
 
 from const import *
-from packet import *
 from proc import *
 
 if __name__ == "__main__":
@@ -23,39 +22,51 @@ if __name__ == "__main__":
 			exit(1)
 
 		# Receve sync data.
-		if int.from_bytes(ser.read(SYNC_DATA_SIZE), "little", signed=False) == SYNC_DATA:
+		if receive_byte(ser) == SYNC_DATA:
 
 			# Get EEPROM size.
-			ser.write(struct.pack(PACKET_T, EEPROM_SIZE, 0, 0))
+			send_byte(ser, EEPROM_SIZE)
 			eeprom_size = int.from_bytes(ser.read(2), "little", signed=False)
 
 			match argc:
 				case 3:
-					TASK = argv[2]
+					task = argv[2]
 
-					match TASK:
+					match task:
 						case "test":
-							ser.write(struct.pack(PACKET_T, DEVICE_PING, 0, 0))
-							check_ack(ser)
-
-						case "clear":
-							ser.write(struct.pack(PACKET_T, EEPROM_CLEAR, 0, 0))
-							check_ack(ser, "EEPROM cleared.")
+							send_byte(ser, DEVICE_PING)
+							wait_ack(ser)
 
 						case "dump":
-							dump = get_dump(ser, eeprom_size)
+							dump = dump_eeprom(ser, eeprom_size)
 							print_hex_dump(dump)
+
+						case "clear":
+							clear_eeprom(ser)
 
 						case "size":
 							print("EEPROM size: %d bytes." % eeprom_size)
 
 						case _:
 							print_help()
-					
+
 				case 4:
-					dump = get_dump(ser, eeprom_size)
-					print_hex_dump(dump)
-					save_dump(argv[3], dump)
+					task = argv[2]
+					filename = argv[3]
+
+					match task:
+						case "dump":
+							dump = dump_eeprom(ser, eeprom_size)
+							print_hex_dump(dump)
+							write_file(dump, filename)
+
+						case "flash":
+							dump = read_file(filename)
+							print_hex_dump(dump)
+							flash_eeprom(ser, dump)
+
+						case _:
+							print_help()
 
 				case _:
 					print_help()
@@ -66,13 +77,3 @@ if __name__ == "__main__":
 		print_help()
 
 	exit(0)
-
-	print(val.hex())
-
-	val = list(struct.unpack(PACKET_T, val))
-	print(val)
-
-	val[2] += 1
-
-	val = struct.pack(PACKET_T, *val).hex()
-	print(val)
