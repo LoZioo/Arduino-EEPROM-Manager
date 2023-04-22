@@ -6,7 +6,7 @@ from const import *
 def print_help() -> None:
 	print("Usage:\n  %s port task [task parameters]\n" % sys.argv[0])
 
-	print("port:\t\t\t\t\t Select COM port.")
+	print("port:\t\t\t\t\t Select serial port.")
 	print()
 
 	print("Tasks:")
