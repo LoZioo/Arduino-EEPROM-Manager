@@ -1,7 +1,7 @@
 import sys
 
-def display_help() -> None:
-	print("Usage:\n  %s task [task parameters] [port] [file]\n" % sys.argv[0])
+def print_help() -> None:
+	print("Usage:\n  %s port task [task parameters] [file]\n" % sys.argv[0])
 
 	print("port:\t\t\t\t Select COM port.")
 	print("file:\t\t\t\t binary file to read from or write to.")

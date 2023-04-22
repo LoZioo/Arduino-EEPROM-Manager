@@ -8,30 +8,37 @@ if __name__ == "__main__":
 	# From bytes to int: int.from_bytes(val, "little", signed=False)
 	# Unpack operator: *val
 
-	match len(sys.argv):
-		case 3:
-			match sys.argv[1]:
-				case "size":
-					SERIAL_PORT = sys.argv[2]
+	argc = len(sys.argv)
+	argv = sys.argv
 
-					ser = serial.Serial(SERIAL_PORT, SERIAL_SPEED)
-					ser.write(struct.pack(PACKET_T, EEPROM_SIZE, 0, 0))
-					print("1")
-					val = hex(int.from_bytes(ser.read(2), "little", signed=False))
-					print("2")
-					ser.close()
+	# Minimum args number.
+	if argc >= 3:
+		SERIAL_PORT = argv[2]
+		ser = serial.Serial(SERIAL_PORT, SERIAL_SPEED)
 
-					print("EEPROM size: %s bytes." % val)
+		# Receve sync data.
+		if int.from_bytes(ser.read(4), "little", signed=False) == SYNC_DATA:
+			match argc:
+				case 3:
+					match argv[1]:
+						case "size":
+							ser.write(struct.pack(PACKET_T, EEPROM_SIZE, 0, 0))
+							val = int.from_bytes(ser.read(2), "little", signed=False)
+
+							print("EEPROM size: %s bytes." % val)
+
+						case _:
+							print_help()
 
 				case _:
-					display_help()
+						print_help()
 
-		case _:
-			display_help()
+		ser.close()
+
+	else:
+		print_help()
 
 	exit(0)
-
-	
 
 	print(val.hex())
 

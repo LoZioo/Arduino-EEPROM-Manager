@@ -4,6 +4,8 @@ import struct
 PACKET_T = "<BHH"	# https://docs.python.org/3/library/struct.html#byte-order-size-and-alignment
 PACKET_SIZE = struct.calcsize(PACKET_T)	# bytes
 
+SYNC_DATA = 0xAABBCCDD
+
 # Available commands
 DEVICE_PING = 0,
 DEVICE_ACK = 1
