@@ -5,9 +5,10 @@ PACKET_T = "<BHH"	# https://docs.python.org/3/library/struct.html#byte-order-siz
 PACKET_SIZE = struct.calcsize(PACKET_T)	# bytes
 
 SYNC_DATA = 0xAABBCCDD
+SYNC_DATA_SIZE = 4
 
 # Available commands
-DEVICE_PING = 0,
+DEVICE_PING = 0
 DEVICE_ACK = 1
 
 EEPROM_READ = 2
