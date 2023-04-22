@@ -13,7 +13,7 @@ if __name__ == "__main__":
 
 	# Minimum args number.
 	if argc >= 3:
-		SERIAL_PORT = argv[2]
+		SERIAL_PORT = argv[1]
 
 		try:
 			ser = serial.Serial(SERIAL_PORT, SERIAL_SPEED)
@@ -24,28 +24,41 @@ if __name__ == "__main__":
 
 		# Receve sync data.
 		if int.from_bytes(ser.read(SYNC_DATA_SIZE), "little", signed=False) == SYNC_DATA:
+
+			# Get EEPROM size.
+			ser.write(struct.pack(PACKET_T, EEPROM_SIZE, 0, 0))
+			eeprom_size = int.from_bytes(ser.read(2), "little", signed=False)
+
 			match argc:
 				case 3:
-					match argv[1]:
+					TASK = argv[2]
+
+					match TASK:
 						case "test":
 							ser.write(struct.pack(PACKET_T, DEVICE_PING, 0, 0))
-							check_ack(ser.read(PACKET_SIZE))
+							check_ack(ser)
 
 						case "clear":
 							ser.write(struct.pack(PACKET_T, EEPROM_CLEAR, 0, 0))
-							check_ack(ser.read(PACKET_SIZE), "EEPROM cleared.")
+							check_ack(ser, "EEPROM cleared.")
+
+						case "dump":
+							dump = get_dump(ser, eeprom_size)
+							print_hex_dump(dump)
 
 						case "size":
-							ser.write(struct.pack(PACKET_T, EEPROM_SIZE, 0, 0))
-							val = int.from_bytes(ser.read(2), "little", signed=False)
-
-							print("EEPROM size: %s bytes." % val)
+							print("EEPROM size: %d bytes." % eeprom_size)
 
 						case _:
 							print_help()
+					
+				case 4:
+					dump = get_dump(ser, eeprom_size)
+					print_hex_dump(dump)
+					save_dump(argv[3], dump)
 
 				case _:
-						print_help()
+					print_help()
 
 		ser.close()
 
