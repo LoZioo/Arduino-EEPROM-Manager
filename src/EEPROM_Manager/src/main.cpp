@@ -5,7 +5,7 @@
 
 uint16_t eeprom_size;
 
-void send_command(command_t com){
+void send_byte(command_t com){
 	Serial.write(com);
 }
 
@@ -17,14 +17,14 @@ void setup(){
 	eeprom_size = EEPROM.length();
 
 	// Send sync data.
-	send_command(SYNC_DATA);
+	send_byte(SYNC_DATA);
 }
 
 void loop(){
 	if(Serial.available()){
 		switch(Serial.read()){
 			case DEVICE_PING:
-				send_command(DEVICE_ACK);
+				send_byte(DEVICE_ACK);
 				break;
 
 			case DEVICE_ACK:
@@ -39,14 +39,14 @@ void loop(){
 				for(uint16_t i=0; i<eeprom_size; i++)
 					EEPROM.update(i, Serial.read());
 
-				send_command(DEVICE_ACK);
+				send_byte(DEVICE_ACK);
 				break;
 
 			case EEPROM_CLEAR:
 				for(uint16_t i=0; i<eeprom_size; i++)
 					EEPROM.update(i, 0);
 
-				send_command(DEVICE_ACK);
+				send_byte(DEVICE_ACK);
 				break;
 
 			case EEPROM_SIZE:
