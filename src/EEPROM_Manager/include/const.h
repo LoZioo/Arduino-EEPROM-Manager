@@ -1,1 +1,13 @@
-#define SERIAL_SPEED 115200
+#define SERIAL_SPEED 115200	
+
+typedef enum : uint8_t {
+	DEVICE_PING,
+	DEVICE_ACK,
+
+	EEPROM_DUMP,
+	EEPROM_FLASH,
+	EEPROM_CLEAR,
+	EEPROM_SIZE,
+
+	SYNC_DATA = 0xAB
+} command_t;

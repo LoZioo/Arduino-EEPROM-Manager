@@ -2,13 +2,12 @@
 #include <EEPROM.h>
 
 #include <const.h>
-#include <packet.h>
-#include <proc.h>
 
-packet_t packet;
-
-uint8_t buf;
 uint16_t eeprom_size;
+
+void send_command(command_t com){
+	Serial.write(com);
+}
 
 void setup(){
 	Serial.begin(SERIAL_SPEED);
@@ -18,33 +17,17 @@ void setup(){
 	eeprom_size = EEPROM.length();
 
 	// Send sync data.
-	Serial.write((uint8_t*) &SYNC_DATA, sizeof(SYNC_DATA));
+	send_command(SYNC_DATA);
 }
 
 void loop(){
 	if(Serial.available()){
-		Serial.readBytes((uint8_t*) &packet, sizeof(packet));
-
-		switch(packet.command){
+		switch(Serial.read()){
 			case DEVICE_PING:
-				send_ack();
+				send_command(DEVICE_ACK);
 				break;
 
 			case DEVICE_ACK:
-				break;
-
-			case EEPROM_READ:
-				for(uint16_t i=packet.mem_address; i<packet.mem_address+packet.data_len; i++){
-					buf = EEPROM.read(i);
-					Serial.write(buf);
-				}
-				break;
-
-			case EEPROM_WRITE:
-				for(uint16_t i=packet.mem_address; i<packet.mem_address+packet.data_len; i++)
-					EEPROM.update(i, Serial.read());
-
-				send_ack();
 				break;
 
 			case EEPROM_DUMP:
@@ -52,11 +35,18 @@ void loop(){
 					Serial.write(EEPROM.read(i));
 				break;
 
+			case EEPROM_FLASH:
+				for(uint16_t i=0; i<eeprom_size; i++)
+					EEPROM.update(i, Serial.read());
+
+				send_command(DEVICE_ACK);
+				break;
+
 			case EEPROM_CLEAR:
 				for(uint16_t i=0; i<eeprom_size; i++)
 					EEPROM.update(i, 0);
 
-				send_ack();
+				send_command(DEVICE_ACK);
 				break;
 
 			case EEPROM_SIZE:
