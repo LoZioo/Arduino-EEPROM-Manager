@@ -8,13 +8,13 @@
 packet_t packet;
 
 uint8_t buf;
-uint16_t eeprom_len;
+uint16_t eeprom_size;
 
 void setup(){
 	Serial.begin(SERIAL_SPEED);
 	EEPROM.begin();
 
-	eeprom_len = EEPROM.length();
+	eeprom_size = EEPROM.length();
 }
 
 void loop(){
@@ -44,19 +44,19 @@ void loop(){
 				break;
 
 			case EEPROM_DUMP:
-				for(uint16_t i=0; i<eeprom_len; i++)
+				for(uint16_t i=0; i<eeprom_size; i++)
 					Serial.write(EEPROM.read(i));
 				break;
 
 			case EEPROM_CLEAR:
-				for(uint16_t i=0; i<eeprom_len; i++)
+				for(uint16_t i=0; i<eeprom_size; i++)
 					EEPROM.update(i, 0);
 
 				send_ack();
 				break;
 
 			case EEPROM_SIZE:
-				Serial.write((uint8_t*) &eeprom_len, sizeof(eeprom_len));
+				Serial.write((uint8_t*) &eeprom_size, sizeof(eeprom_size));
 				break;
 		}
 	}
