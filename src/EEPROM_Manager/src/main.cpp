@@ -11,8 +11,6 @@ void send_byte(command_t val){
 }
 
 void setup(){
-	pinMode(LED_BUILTIN, OUTPUT);
-
 	Serial.begin(SERIAL_SPEED);
 	EEPROM.begin();
 
@@ -26,8 +24,6 @@ void setup(){
 
 void loop(){
 	if(Serial.available()){
-		digitalWrite(LED_BUILTIN, HIGH);
-
 		switch(Serial.read()){
 			case DEVICE_PING:
 				send_byte(DEVICE_ACK);
@@ -45,7 +41,7 @@ void loop(){
 				Serial.readBytes(buf, eeprom_size);
 
 				for(uint16_t i=0; i<eeprom_size; i++)
-					EEPROM.update(i, Serial.read());
+					EEPROM.update(i, buf[i]);
 
 				send_byte(DEVICE_ACK);
 				break;
@@ -61,7 +57,5 @@ void loop(){
 				Serial.write((uint8_t*) &eeprom_size, sizeof(eeprom_size));
 				break;
 		}
-
-		digitalWrite(LED_BUILTIN, LOW);
 	}
 }
