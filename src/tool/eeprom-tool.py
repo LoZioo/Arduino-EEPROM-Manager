@@ -29,13 +29,11 @@ if __name__ == "__main__":
 					match argv[1]:
 						case "test":
 							ser.write(struct.pack(PACKET_T, DEVICE_PING, 0, 0))
-							ack = struct.unpack(PACKET_T, ser.read(PACKET_SIZE))
-							
-							if ack == (DEVICE_ACK, 0, 0):
-								print("ACK received.")
-							
-							else:
-								print("Error: wrong ACK packet.")
+							check_ack(ser.read(PACKET_SIZE))
+
+						case "clear":
+							ser.write(struct.pack(PACKET_T, EEPROM_CLEAR, 0, 0))
+							check_ack(ser.read(PACKET_SIZE), "EEPROM cleared.")
 
 						case "size":
 							ser.write(struct.pack(PACKET_T, EEPROM_SIZE, 0, 0))

@@ -1,5 +1,7 @@
 import sys
 
+from packet import *
+
 def print_help() -> None:
 	print("Usage:\n  %s port task [task parameters] [file]\n" % sys.argv[0])
 
@@ -15,3 +17,13 @@ def print_help() -> None:
 	print("  dump\t\t\t\t Dump EEPROM content in the binary file.")
 	print("  clear\t\t\t\t Fill the entire EEPROM with zeros.")
 	print("  size\t\t\t\t Get the EEPROM size in bytes.")
+
+def check_ack(packet: bytes, message: str = "ACK received.") -> bool:
+	ack = struct.unpack(PACKET_T, packet)
+
+	if ack == (DEVICE_ACK, 0, 0):
+		print(message)
+		return True
+	
+	print("Error: wrong ACK packet.")
+	return False
