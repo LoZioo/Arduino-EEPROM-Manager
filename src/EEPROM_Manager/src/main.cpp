@@ -3,6 +3,7 @@
 
 #include <const.h>
 
+uint8_t *buf;
 uint16_t eeprom_size;
 
 void send_byte(command_t val){
@@ -10,11 +11,14 @@ void send_byte(command_t val){
 }
 
 void setup(){
+	pinMode(LED_BUILTIN, OUTPUT);
+
 	Serial.begin(SERIAL_SPEED);
 	EEPROM.begin();
 
 	// Get EEPROM size.
 	eeprom_size = EEPROM.length();
+	buf = new uint8_t[eeprom_size];
 
 	// Send sync data.
 	send_byte(SYNC_DATA);
@@ -22,6 +26,8 @@ void setup(){
 
 void loop(){
 	if(Serial.available()){
+		digitalWrite(LED_BUILTIN, HIGH);
+
 		switch(Serial.read()){
 			case DEVICE_PING:
 				send_byte(DEVICE_ACK);
@@ -36,6 +42,8 @@ void loop(){
 				break;
 
 			case EEPROM_FLASH:
+				Serial.readBytes(buf, eeprom_size);
+
 				for(uint16_t i=0; i<eeprom_size; i++)
 					EEPROM.update(i, Serial.read());
 
@@ -53,5 +61,7 @@ void loop(){
 				Serial.write((uint8_t*) &eeprom_size, sizeof(eeprom_size));
 				break;
 		}
+
+		digitalWrite(LED_BUILTIN, LOW);
 	}
 }
